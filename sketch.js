@@ -1,7 +1,9 @@
 var balloon,balloonImage1,balloonImage2;
 // create database and position variable here
 var balloonPosition;
-var balloonDataBase;
+var database;
+//var height = 0;
+
 function preload(){
    bg =loadImage("cityImage.png");
    balloonImage1=loadAnimation("hotairballoon1.png");
@@ -14,8 +16,9 @@ function preload(){
 function setup() {
   database=firebase.database();
   createCanvas(1500,700);
+
   balloonPosition=database.ref('balloon/height');
-  balloonPosition.on("value",readPosition, showError);
+  balloonPosition.on("value",readHeight, showError);
 
   balloon=createSprite(250,450,150,150);
   balloon.addAnimation("hotAirBalloon",balloonImage1);
@@ -36,11 +39,13 @@ function draw() {
   else if(keyDown(RIGHT_ARROW)){
     updateHeight(10,0);
     balloon.addAnimation("hotAirBalloon",balloonImage2);
+
     //write code to move air balloon in right direction
   }
   else if(keyDown(UP_ARROW)){
     updateHeight(0,-10);
     balloon.addAnimation("hotAirBalloon",balloonImage2);
+    
     //write code to move air balloon in up direction
 
   }
@@ -58,18 +63,18 @@ function draw() {
   text("**Use arrow keys to move Hot Air Balloon!",40,40);
 }
 function updateHeight(x,y) {
-  database.ref('balloon/height').setup({
-    'x':innerHeight.x + x,
-    'y':innerHeight.y + y
+  database.ref('balloon/height').set({
+    'x':balloon.x + x,
+    'y':balloon.y + y
   })
   
 }
 
-function readHeight(data) {
-  height = data.val();
+function readHeight(data){
+  var height = data.val();
+  console.log(height.x);
   balloon.x = height.x;
   balloon.y = height.y;
-  
 }
 
 function showError() {
